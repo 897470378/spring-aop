@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd">
+	
+													<!-- xml的方式实现aop面向切面编程 -->
+	
+	<bean id="userService" class="com.sikiedu.beanImpl.UserServiceImpl"></bean>
+	
+	<!-- 增強的方法-->
+	<bean id="log" class="com.sikiedu.text.log"></bean>
+	
+	<aop:config>
+		<!--切入点，需要告诉方法在什么去执行
+			expression="execution(* com.spring.service.impl.*.*(..))"
+			第一个* 表示所有的返回值，然后就是包名
+			第二个*表示所有的类对象
+			第三个*表示类对象所有的方法
+			第四个*表示所有方法下面的带参数的方法或者是不带参数的方法
+		-->						  
+		<aop:pointcut id="pointcut" expression="execution(* com.sikiedu.beanImpl.*.*(..))" />
+		
+		<!-- 在所有的方法中都切入前置通知 
+		   order:表示优先级       ref:表示需要新增的方法bean的name(简称增强)-->
+		<aop:aspect order="3" ref="log">
+		
+			<!-- 前置通知
+			 method:增强类中的方法名       pointcut-ref:上面切入点的beanname -->
+			<aop:before  method="before" pointcut-ref="pointcut"/>
+			
+			<!-- 后置通知 -->
+			<aop:after method="after" pointcut-ref="pointcut"/>
+			
+			<!-- 返回通知  returning:表示增强方法中返回通知的参数名称-->		
+			<aop:after-returning method="afterReturnMethod" pointcut-ref="pointcut" returning="result"/>
+			
+			<!-- 异常通知 throwing:表示增强方法中异常通知的参数名称-->
+			<aop:after-throwing method="afterThrowingMethod" pointcut-ref="pointcut" throwing="ex"/>
+			
+			<!-- 环绕通知 -->
+			<aop:around method="aroundMethod" pointcut-ref="pointcut"/>
+		</aop:aspect>
+	</aop:config>
+</beans>
